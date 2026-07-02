@@ -17,7 +17,13 @@
         "OT_SCHEDULLING_DTL",
         "WD_TPRBP_DTLS",
         "Ctpl_OpInitialAssessment",
-        "Ctpl_OPNurseAssessment_Dtl"
+        "Ctpl_OPNurseAssessment_Dtl",
+        "OrderMst",
+        "Receipt_Mst",
+        "Billing_Mst",
+        "DrugSaleMst",
+        "WD_Prescription_Mst",
+        "OT_Scheduling_Mst"
     ],
     "master_tables": [
         {
@@ -671,26 +677,6 @@
             "system_uri": "http://hospital/fhir/visittype"
         },
         {
-            "source_table": "Billing_Mst",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/billing"
-        },
-        {
-            "source_table": "OrderMst",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/ordermst"
-        },
-        {
             "source_table": "Service_Mst",
             "source_filter": null,
             "id_column": "ID",
@@ -699,16 +685,6 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/service"
-        },
-        {
-            "source_table": "Receipt_Mst",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/receipt"
         },
         {
             "source_table": "Room_Mst",
@@ -759,36 +735,6 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/bed_status"
-        },
-        {
-            "source_table": "DrugSaleMst",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/drugsalemst"
-        },
-        {
-            "source_table": "WD_Prescription_Mst",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/wd_prescription"
-        },
-        {
-            "source_table": "OT_Scheduling_Mst",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/ot_scheduling"
         }
     ]
 }

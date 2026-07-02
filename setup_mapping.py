@@ -6,7 +6,8 @@ business_tables = [
     "IVItem", "DrugSaleDtl", "WD_Prescription_Details", 
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
     "LABTest", "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
-    "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl"
+    "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl",
+    "OrderMst", "Receipt_Mst", "Billing_Mst", "DrugSaleMst", "WD_Prescription_Mst", "OT_Scheduling_Mst"
 ]
 
 raw_data = """
@@ -76,18 +77,12 @@ raw_data = """
 "ALLERGYFOOD", "AllergyFoodMst WHERE Deactive = 0", "	true"
 "USERMST", "User_Mst", "	true"
 "VISITTYPEMST", "VisitType_Mst", "	true"
-"BILLINGMST", "Billing_Mst", "	true"
-"ORDERMST", "OrderMst", "	true"
 "SERVICEMST", "Service_Mst", "	true"
-"RECEIPTMST", "Receipt_Mst", "	true"
 "ROOMMST", "Room_Mst", "	true"
 "BEDMST", "Bed_Mst", "	true"
 "FLOORMST", "Floor_Mst", "	true"
 "BLOCKMST", "Block_Mst", "	true"
 "BEDSTATUSMST", "Bed_Status_Mst", "	true"
-"DRUGSALEMST", "DrugSaleMst", "	true"
-"WDPRESCRIPTIONMST", "WD_Prescription_Mst", "	true"
-"OTSCHEDULINGMST", "OT_Scheduling_Mst", "	true"
 """
 
 master_tables = []

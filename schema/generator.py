@@ -124,9 +124,11 @@ class SchemaGenerator:
 
         fhir_cols = ['id', 'code', 'display', 'display_arb', 'system', 'isactive']
 
+        mapped_original_cols_lower = [c.lower() for c in mapped_original_cols]
+
         for col in columns:
             col_name = col['column_name'].lower()
-            if col_name in mapped_original_cols:
+            if col_name in mapped_original_cols_lower:
                 continue # Renamed to FHIR column
             
             final_col_name = col_name

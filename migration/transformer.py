@@ -28,11 +28,12 @@ class DataTransformer:
         pass
 
     def transform_business_batch(self, batch: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Business tables are migrated essentially as-is (schema-wise).
-        This acts as a passthrough, but can be extended for data cleansing if needed.
-        """
-        return batch
+        # For business tables, standard pass-through but with lowercase keys
+        transformed = []
+        for row in batch:
+            transformed_row = {k.lower(): v for k, v in row.items()}
+            transformed.append(transformed_row)
+        return transformed
 
     def transform_master_batch(self, batch: List[Dict[str, Any]], mapping_config: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -68,12 +69,13 @@ class DataTransformer:
                 
                 # Copy all unmapped original columns. If they clash, prefix them with src_
                 for k, v in row.items():
-                    if k.lower() in mapped_cols_lower:
+                    k_lower = k.lower()
+                    if k_lower in mapped_cols_lower:
                         continue # Skip this, as it is renamed to a FHIR column
-                    if k.lower() in fhir_cols:
-                        transformed_row["src_" + k] = v
+                    if k_lower in fhir_cols:
+                        transformed_row["src_" + k_lower] = v
                     else:
-                        transformed_row[k] = v
+                        transformed_row[k_lower] = v
 
                 # Set FHIR columns
                 transformed_row['id'] = row_lower.get(id_col)

@@ -66,7 +66,7 @@ class SchemaGenerator:
                 col['scale']
             )
             nullable = "NULL" if col['is_nullable'] else "NOT NULL"
-            col_defs.append(f"    `{col['column_name']}` {mysql_type} {nullable}")
+            col_defs.append(f"    `{col['column_name'].lower()}` {mysql_type} {nullable}")
         
         if pks:
             pk_str = ", ".join([f"`{pk}`" for pk in pks])
@@ -125,12 +125,12 @@ class SchemaGenerator:
         fhir_cols = ['id', 'code', 'display', 'display_arb', 'system', 'isactive']
 
         for col in columns:
-            col_name = col['column_name']
+            col_name = col['column_name'].lower()
             if col_name in mapped_original_cols:
                 continue # Renamed to FHIR column
             
             final_col_name = col_name
-            if final_col_name.lower() in fhir_cols:
+            if final_col_name in fhir_cols:
                 final_col_name = "src_" + final_col_name # Rename original column to avoid clash and keep data
             
             mysql_type = mssql_to_mysql_type(col['data_type'], col['max_length'], col['precision'], col['scale'])

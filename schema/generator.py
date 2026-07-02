@@ -109,7 +109,7 @@ class SchemaGenerator:
         for col in columns:
             col_name = col['column_name']
             if col_name.lower() in fhir_cols:
-                continue # Skip original columns that conflict with FHIR component names
+                col_name = "src_" + col_name # Rename original column to avoid clash and keep data
             mysql_type = mssql_to_mysql_type(
                 col['data_type'], 
                 col['max_length'], 

@@ -21,7 +21,8 @@
         "Billing_Mst",
         "DrugSaleMst",
         "WD_Prescription_Mst",
-        "OT_Scheduling_Mst"
+        "OT_Scheduling_Mst",
+        "vwDiscountAuthority"
     ],
     "master_tables": [
         {
@@ -563,16 +564,6 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/discountreason"
-        },
-        {
-            "source_table": "vwDiscountAuthority",
-            "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/vwdiscountauthority"
         },
         {
             "source_table": "DischargeType_Mst",

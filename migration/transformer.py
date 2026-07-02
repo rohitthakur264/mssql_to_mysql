@@ -64,9 +64,11 @@ class DataTransformer:
                 fhir_cols = ['id', 'code', 'display', 'display_arb', 'system', 'isactive']
                 transformed_row = {}
                 
-                # Copy all original columns except those that clash with fhir_cols
+                # Copy all original columns. If they clash, prefix them with src_
                 for k, v in row.items():
-                    if k.lower() not in fhir_cols:
+                    if k.lower() in fhir_cols:
+                        transformed_row["src_" + k] = v
+                    else:
                         transformed_row[k] = v
 
                 # Set FHIR columns

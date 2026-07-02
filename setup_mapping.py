@@ -7,7 +7,8 @@ business_tables = [
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
     "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
     "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl",
-    "OrderMst", "Receipt_Mst", "Billing_Mst", "DrugSaleMst", "WD_Prescription_Mst", "OT_Scheduling_Mst"
+    "OrderMst", "Receipt_Mst", "Billing_Mst", "DrugSaleMst", "WD_Prescription_Mst", "OT_Scheduling_Mst",
+    "vwDiscountAuthority"
 ]
 
 raw_data = """
@@ -66,7 +67,6 @@ raw_data = """
 "FREQUENCY", "WD_PrescriptionFrequency", "	true"
 "EVALUATION", "CTpl_CheckBoxCategoryDetails where SubModID=1145 and CategoryID=2 and isnull(Deactive,0)=0", "	true"
 "DISCOUNTREASONMST", "DiscountReason_Mst where isnull(deactive,0)= 0", "	true"
-"DISCOUNTAUTHORITY", "vwDiscountAuthority", "	true"
 "DISCHARGETYPE", "DischargeType_Mst where (Deactive = 0 or Deactive is null) ORDER BY DischargeType_ID ASC", "	true"
 "DISCHARGETO", "DischargeTo_Mst", "	true"
 "DIAGNOSISTYPE", "NphiesDiagnosisTypeID ORDER BY 1 ASC", "	true"

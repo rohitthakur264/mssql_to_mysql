@@ -5,7 +5,6 @@
         "BillingDetails",
         "OrderDtl",
         "Receipt_Dtls",
-        "IVItem",
         "DrugSaleDtl",
         "WD_Prescription_Details",
         "WD_PrescriptionDaysFrequency",
@@ -735,6 +734,16 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/bed_status"
+        },
+        {
+            "source_table": "IVItem",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/ivitem"
         }
     ]
 }

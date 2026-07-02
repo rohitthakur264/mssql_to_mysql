@@ -3,7 +3,7 @@ import re
 
 business_tables = [
     "Patient", "Visit", "BillingDetails", "OrderDtl", "Receipt_Dtls", 
-    "IVItem", "DrugSaleDtl", "WD_Prescription_Details", 
+    "DrugSaleDtl", "WD_Prescription_Details", 
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
     "LABTest", "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
     "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl",
@@ -83,6 +83,7 @@ raw_data = """
 "FLOORMST", "Floor_Mst", "	true"
 "BLOCKMST", "Block_Mst", "	true"
 "BEDSTATUSMST", "Bed_Status_Mst", "	true"
+"IVITEM", "IVItem", "	true"
 """
 
 master_tables = []

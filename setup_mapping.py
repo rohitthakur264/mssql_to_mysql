@@ -2,15 +2,11 @@ import json
 import re
 
 business_tables = [
-    "Patient", "User_Mst", "Visit", "VisitType_Mst", "Billing_Mst", 
-    "BillingDetails", "OrderMst", "OrderDtl", "Service_Mst", "Receipt_Mst", 
-    "Receipt_Dtls", "IVItem", "Gender_Mst", "PatientType_Mst", 
-    "Room_Mst", "Bed_Mst", "Floor_Mst", "Block_Mst", "Bed_Status_Mst", 
-    "DrugSaleMst", "DrugSaleDtl", "WD_Prescription_Mst", "WD_Prescription_Details", 
+    "Patient", "Visit", "BillingDetails", "OrderDtl", "Receipt_Dtls", 
+    "IVItem", "DrugSaleDtl", "WD_Prescription_Details", 
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
-    "LABTest", "LABTestParam", "LABTestResult", "OT_Scheduling_Mst", 
-    "OT_SCHEDULLING_DTL", "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", 
-    "Ctpl_OPNurseAssessment_Dtl"
+    "LABTest", "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
+    "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl"
 ]
 
 raw_data = """
@@ -78,6 +74,20 @@ raw_data = """
 "ALLERGYTYPE", "Allergies_mst", "	true"
 "ALLERGYMEDICINE", "AllergyMedicineMst WHERE Deactive =0", "	true"
 "ALLERGYFOOD", "AllergyFoodMst WHERE Deactive = 0", "	true"
+"USERMST", "User_Mst", "	true"
+"VISITTYPEMST", "VisitType_Mst", "	true"
+"BILLINGMST", "Billing_Mst", "	true"
+"ORDERMST", "OrderMst", "	true"
+"SERVICEMST", "Service_Mst", "	true"
+"RECEIPTMST", "Receipt_Mst", "	true"
+"ROOMMST", "Room_Mst", "	true"
+"BEDMST", "Bed_Mst", "	true"
+"FLOORMST", "Floor_Mst", "	true"
+"BLOCKMST", "Block_Mst", "	true"
+"BEDSTATUSMST", "Bed_Status_Mst", "	true"
+"DRUGSALEMST", "DrugSaleMst", "	true"
+"WDPRESCRIPTIONMST", "WD_Prescription_Mst", "	true"
+"OTSCHEDULINGMST", "OT_Scheduling_Mst", "	true"
 """
 
 master_tables = []

@@ -46,11 +46,11 @@ class DataTransformer:
                 # We do a case-insensitive lookup for safety
                 row_lower = {k.lower(): v for k, v in row.items()}
                 
-                id_col = find_col(row_lower, mapping_config.get('id_column', ''), ['id'])
-                code_col = find_col(row_lower, mapping_config.get('code_column', ''), ['code'])
-                display_col = find_col(row_lower, mapping_config.get('display_column', ''), ['desc', 'description', 'name'])
-                display_arb_col = find_col(row_lower, mapping_config.get('display_arb_column', ''), ['arb'])
-                active_col = find_col(row_lower, mapping_config.get('active_column', ''), ['active', 'deactive'])
+                id_col = find_col(row_lower, mapping_config.get('id_column', 'ID'), ['id'])
+                code_col = find_col(row_lower, mapping_config.get('code_column', 'Code'), ['code'])
+                display_col = find_col(row_lower, mapping_config.get('display_column', 'Description'), ['desc', 'description', 'name'])
+                display_arb_col = find_col(row_lower, mapping_config.get('display_arb_column', 'DescriptionArb'), ['arb', 'arabic'])
+                active_col = find_col(row_lower, mapping_config.get('active_column', 'Deactive'), ['active', 'isactive', 'status'])
                 
                 is_active_val = row_lower.get(active_col)
                 # Convert active value to TINYINT(1) equivalent (1 or 0)

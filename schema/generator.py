@@ -139,8 +139,8 @@ class SchemaGenerator:
             nullable = "NULL" if col['is_nullable'] else "NOT NULL"
             col_defs.append(f"    `{final_col_name}` {mysql_type} {nullable}")
             
-        col_defs.append("    PRIMARY KEY (`id`)")
-        
+        # Removed PRIMARY KEY (`id`) to allow extracting duplicate records from union views like AdmissionSource
+
         sql += ",\n".join(col_defs)
         sql += "\n);\n"
         return sql

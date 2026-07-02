@@ -55,7 +55,8 @@ class SchemaGenerator:
         columns = metadata['columns']
         pks = metadata['primary_keys']
         
-        sql = f"CREATE TABLE IF NOT EXISTS `{target_table_name}` (\n"
+        sql = f"DROP TABLE IF EXISTS `{target_table_name}`;\n"
+        sql += f"CREATE TABLE `{target_table_name}` (\n"
         col_defs = []
         for col in columns:
             mysql_type = mssql_to_mysql_type(
@@ -80,44 +81,61 @@ class SchemaGenerator:
         Generates FHIR-compliant Master CREATE TABLE statement (6 specific columns + all original columns).
         """
         columns = metadata['columns']
-        id_col_name = mapping_config.get('id_column', 'ID')
-        
-        # Find the datatype of the source ID column to use for the target `id`
-        id_mysql_type = "VARCHAR(100)" # Default fallback
-        for col in columns:
-            if col['column_name'].lower() == id_col_name.lower():
-                id_mysql_type = mssql_to_mysql_type(
-                    col['data_type'], 
-                    col['max_length'], 
-                    col['precision'], 
-                    col['scale']
-                )
-                break
-                
-        fhir_cols = ['id', 'code', 'display', 'display_arb', 'system', 'isactive']
-        
-        sql = f"CREATE TABLE IF NOT EXISTS `{target_table_name}` (\n"
+        def find_col_name(cols: List[str], expected: str, hints: List[str]) -> str:
+            expected = expected.lower()
+            for c in cols:
+                if c.lower() == expected: return c
+            for c in cols:
+                for hint in hints:
+                    if hint in c.lower(): return c
+            return None
+
+        col_names = [c['column_name'] for c in columns]
+        id_col = find_col_name(col_names, mapping_config.get('id_column', 'ID'), ['id'])
+        code_col = find_col_name(col_names, mapping_config.get('code_column', 'Code'), ['code'])
+        display_col = find_col_name(col_names, mapping_config.get('display_column', 'Description'), ['desc', 'description', 'name'])
+        display_arb_col = find_col_name(col_names, mapping_config.get('display_arb_column', 'DescriptionArb'), ['arb', 'arabic'])
+        active_col = find_col_name(col_names, mapping_config.get('active_column', 'Deactive'), ['active', 'isactive', 'status'])
+
+        mapped_original_cols = [c for c in [id_col, code_col, display_col, display_arb_col, active_col] if c is not None]
+
+        def get_col_type(c_name, default_type):
+            if not c_name: return default_type
+            for c in columns:
+                if c['column_name'] == c_name:
+                    return mssql_to_mysql_type(c['data_type'], c['max_length'], c['precision'], c['scale'])
+            return default_type
+
+        id_mysql_type = get_col_type(id_col, "VARCHAR(100)")
+        code_mysql_type = get_col_type(code_col, "VARCHAR(100)")
+        display_mysql_type = get_col_type(display_col, "VARCHAR(255)")
+        display_arb_mysql_type = get_col_type(display_arb_col, "VARCHAR(255)")
+
+        sql = f"DROP TABLE IF EXISTS `{target_table_name}`;\n"
+        sql += f"CREATE TABLE `{target_table_name}` (\n"
         col_defs = [
             f"    `id` {id_mysql_type} NOT NULL",
-            "    `code` VARCHAR(100)",
-            "    `display` VARCHAR(255)",
-            "    `display_arb` VARCHAR(255)",
-            "    `system` VARCHAR(255)",
-            "    `isactive` TINYINT(1)"
+            f"    `code` {code_mysql_type}",
+            f"    `display` {display_mysql_type}",
+            f"    `display_arb` {display_arb_mysql_type}",
+            f"    `system` VARCHAR(255)",
+            f"    `isactive` TINYINT(1)"
         ]
-        
+
+        fhir_cols = ['id', 'code', 'display', 'display_arb', 'system', 'isactive']
+
         for col in columns:
             col_name = col['column_name']
-            if col_name.lower() in fhir_cols:
-                col_name = "src_" + col_name # Rename original column to avoid clash and keep data
-            mysql_type = mssql_to_mysql_type(
-                col['data_type'], 
-                col['max_length'], 
-                col['precision'], 
-                col['scale']
-            )
+            if col_name in mapped_original_cols:
+                continue # Renamed to FHIR column
+            
+            final_col_name = col_name
+            if final_col_name.lower() in fhir_cols:
+                final_col_name = "src_" + final_col_name # Rename original column to avoid clash and keep data
+            
+            mysql_type = mssql_to_mysql_type(col['data_type'], col['max_length'], col['precision'], col['scale'])
             nullable = "NULL" if col['is_nullable'] else "NOT NULL"
-            col_defs.append(f"    `{col_name}` {mysql_type} {nullable}")
+            col_defs.append(f"    `{final_col_name}` {mysql_type} {nullable}")
             
         col_defs.append("    PRIMARY KEY (`id`)")
         

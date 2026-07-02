@@ -61,11 +61,15 @@ class DataTransformer:
                     # Generic active flag mapping
                     final_active = 1 if is_active_val in (1, True, 'Y', 'Yes') else 0
 
+                mapped_cols_lower = [c for c in [id_col, code_col, display_col, display_arb_col, active_col] if c is not None]
+
                 fhir_cols = ['id', 'code', 'display', 'display_arb', 'system', 'isactive']
                 transformed_row = {}
                 
-                # Copy all original columns. If they clash, prefix them with src_
+                # Copy all unmapped original columns. If they clash, prefix them with src_
                 for k, v in row.items():
+                    if k.lower() in mapped_cols_lower:
+                        continue # Skip this, as it is renamed to a FHIR column
                     if k.lower() in fhir_cols:
                         transformed_row["src_" + k] = v
                     else:

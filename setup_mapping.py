@@ -7,6 +7,7 @@ business_tables = [
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
     "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
     "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl",
+    "OrderMst", "Receipt_Mst", "Billing_Mst", "DrugSaleMst", "WD_Prescription_Mst", "OT_Scheduling_Mst",
     "vwDiscountAuthority"
 ]
 
@@ -122,18 +123,6 @@ for line in raw_data.strip().split('\n'):
             "active_column": "Deactive",
             "system_uri": system_uri
         })
-
-for t in ["OrderMst", "Receipt_Mst", "Billing_Mst", "DrugSaleMst", "WD_Prescription_Mst", "OT_Scheduling_Mst"]:
-    master_tables.append({
-        "source_table": t,
-        "source_filter": None,
-        "id_column": "ID",
-        "code_column": "Code",
-        "display_column": "Description",
-        "display_arb_column": "DescriptionArb",
-        "active_column": "Deactive",
-        "system_uri": f"http://hospital/fhir/{t.lower().replace('_mst', '')}"
-    })
 
 mapping = {
     "business_tables": business_tables,

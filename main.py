@@ -144,13 +144,30 @@ def run_migration():
             metadata = reader.get_table_metadata(table)
             fk_sql = schema_gen.generate_foreign_keys_sql(target_table, metadata)
             if fk_sql:
-                # Need to be careful here if referenced tables don't exist in MySQL
-                # For a robust system, we might only add FKs where referenced table is in migration list.
-                # loader.execute_schema_sql(fk_sql)
-                logger.info(f"Generated FK SQL for {table} (Saved to logs, requires review before execution due to potential missing tables).")
-                logger.debug(fk_sql)
+                try:
+                    loader.execute_schema_sql(fk_sql)
+                    logger.info(f"Successfully generated and applied FKs for {table}.")
+                except Exception as e:
+                    logger.warning(f"Could not apply some FKs for {table} (referenced table might be missing or renamed): {e}")
         except Exception as e:
             logger.error(f"Failed to generate FKs for {table}: {e}")
+
+    for m_table_config in master_tables:
+        source_table_raw = m_table_config['source_table']
+        parts = re.split(r'\s+where\s+', source_table_raw, flags=re.IGNORECASE)
+        source_table = parts[0].strip()
+        target_table = m_table_config.get('target_table', f"fhir_{source_table.lower()}")
+        try:
+            metadata = reader.get_table_metadata(source_table)
+            fk_sql = schema_gen.generate_foreign_keys_sql(target_table, metadata)
+            if fk_sql:
+                try:
+                    loader.execute_schema_sql(fk_sql)
+                    logger.info(f"Successfully generated and applied FKs for {source_table}.")
+                except Exception as e:
+                    logger.warning(f"Could not apply some FKs for {source_table} (referenced table might be missing or renamed): {e}")
+        except Exception as e:
+            logger.error(f"Failed to generate FKs for {source_table}: {e}")
 
     # 4. Generate Reports
     logger.info("Generating reports...")

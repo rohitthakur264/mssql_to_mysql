@@ -162,8 +162,8 @@ class SchemaGenerator:
             # this logic might need adjustment during execution to point to the new name.
             # For now, we generate standard FKs.
             ref_target_table = f"fhir_{fk['ref_table'].lower()}"
-            fk_name = f"fk_{target_table_name}_{fk['column_name']}"
-            fk_defs.append(f"  ADD CONSTRAINT `{fk_name}` FOREIGN KEY (`{fk['column_name']}`) REFERENCES `{ref_target_table}` (`{fk['ref_column']}`)")
+            fk_name = f"fk_{target_table_name}_{fk['column_name'].lower()}"
+            fk_defs.append(f"  ADD CONSTRAINT `{fk_name}` FOREIGN KEY (`{fk['column_name'].lower()}`) REFERENCES `{ref_target_table}` (`{fk['ref_column'].lower()}`)")
             
         sql += ",\n".join(fk_defs)
         sql += ";\n"

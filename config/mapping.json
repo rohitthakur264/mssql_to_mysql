@@ -14,7 +14,6 @@
         "IVItem",
         "Gender_Mst",
         "PatientType_Mst",
-        "PatientSubType_Mst",
         "Room_Mst",
         "Bed_Mst",
         "Floor_Mst",
@@ -316,6 +315,16 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/patienttype"
+        },
+        {
+            "source_table": "PatientSubType_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/patientsubtype"
         },
         {
             "source_table": "PatientIdType_mst",

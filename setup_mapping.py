@@ -4,7 +4,7 @@ import re
 business_tables = [
     "Patient", "User_Mst", "Visit", "VisitType_Mst", "Billing_Mst", 
     "BillingDetails", "OrderMst", "OrderDtl", "Service_Mst", "Receipt_Mst", 
-    "Receipt_Dtls", "IVItem", "Gender_Mst", "PatientType_Mst", "PatientSubType_Mst", 
+    "Receipt_Dtls", "IVItem", "Gender_Mst", "PatientType_Mst", 
     "Room_Mst", "Bed_Mst", "Floor_Mst", "Block_Mst", "Bed_Status_Mst", 
     "DrugSaleMst", "DrugSaleDtl", "WD_Prescription_Mst", "WD_Prescription_Details", 
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
@@ -42,6 +42,7 @@ raw_data = """
 "GETPRPATIENTINSURANCEID", "Insurance_Mst where ISnull(Deactive,0)=0", "	true"
 "GETPAYMENTMODE", "paymentmode_mst where Deactive=0", "	true"
 "GETPATIENTTYPE", "patienttype_mst", "	true"
+"GETPATIENTSUBTYPE", "PatientSubType_Mst", "	true"
 "GETPATIENTIDTYPE", "PatientIdType_mst", "	true"
 "GETOTREFRALTYPE", "DDRefreralType", "	true"
 "GETOCCUPATION", "Occupation_Mst  where isnull(Deactive,0)=0", "	true"

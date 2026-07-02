@@ -10,7 +10,6 @@
         "WD_PrescriptionDaysFrequency",
         "Ds_PatientAppoinment",
         "Ds_PatientAppoinmentTemperary",
-        "LABTest",
         "LABTestParam",
         "LABTestResult",
         "OT_SCHEDULLING_DTL",
@@ -744,6 +743,16 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/ivitem"
+        },
+        {
+            "source_table": "LABTest",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/labtest"
         }
     ]
 }

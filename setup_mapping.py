@@ -5,7 +5,7 @@ business_tables = [
     "Patient", "Visit", "BillingDetails", "OrderDtl", "Receipt_Dtls", 
     "DrugSaleDtl", "WD_Prescription_Details", 
     "WD_PrescriptionDaysFrequency", "Ds_PatientAppoinment", "Ds_PatientAppoinmentTemperary", 
-    "LABTest", "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
+    "LABTestParam", "LABTestResult", "OT_SCHEDULLING_DTL", 
     "WD_TPRBP_DTLS", "Ctpl_OpInitialAssessment", "Ctpl_OPNurseAssessment_Dtl",
     "OrderMst", "Receipt_Mst", "Billing_Mst", "DrugSaleMst", "WD_Prescription_Mst", "OT_Scheduling_Mst"
 ]
@@ -84,6 +84,7 @@ raw_data = """
 "BLOCKMST", "Block_Mst", "	true"
 "BEDSTATUSMST", "Bed_Status_Mst", "	true"
 "IVITEM", "IVItem", "	true"
+"LABTEST", "LABTest", "	true"
 """
 
 master_tables = []

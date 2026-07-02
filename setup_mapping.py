@@ -87,7 +87,7 @@ raw_data = """
 "LABTEST", "LABTest", "	true"
 """
 
-master_tables = []
+master_tables_dict = {}
 for line in raw_data.strip().split('\n'):
     if not line.strip(): continue
     parts = line.split('", "')
@@ -113,16 +113,23 @@ for line in raw_data.strip().split('\n'):
 
         system_uri = f"http://hospital/fhir/{table_name.lower().replace('_mst', '').replace('_master', '')}"
 
-        master_tables.append({
-            "source_table": table_name.strip(),
-            "source_filter": filter_str,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": system_uri
-        })
+        if table_name.strip() not in master_tables_dict:
+            master_tables_dict[table_name.strip()] = {
+                "source_table": table_name.strip(),
+                "source_filter": filter_str,
+                "id_column": "ID",
+                "code_column": "Code",
+                "display_column": "Description",
+                "display_arb_column": "DescriptionArb",
+                "active_column": "Deactive",
+                "system_uri": system_uri
+            }
+        else:
+            # If the table is mentioned multiple times with different filters, 
+            # we should just remove the filter to fetch ALL records for this table once.
+            master_tables_dict[table_name.strip()]["source_filter"] = None
+
+master_tables = list(master_tables_dict.values())
 
 mapping = {
     "business_tables": business_tables,

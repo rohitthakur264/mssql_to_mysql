@@ -87,7 +87,7 @@
         },
         {
             "source_table": "CTpl_CheckBoxCategoryDetails",
-            "source_filter": "where SubModID=1145 and CategoryID=1 and isnull(Deactive,0)=0",
+            "source_filter": null,
             "id_column": "ID",
             "code_column": "Code",
             "display_column": "Description",
@@ -128,16 +128,6 @@
         {
             "source_table": "OutputItem_Mst",
             "source_filter": null,
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/outputitem"
-        },
-        {
-            "source_table": "OutputItem_Mst",
-            "source_filter": "where ISNULL(Deactive,0)=0",
             "id_column": "ID",
             "code_column": "Code",
             "display_column": "Description",
@@ -207,7 +197,7 @@
         },
         {
             "source_table": "TPAAgreementType_mst",
-            "source_filter": "where Deactive=0  ORDER BY AgreementTypeId",
+            "source_filter": null,
             "id_column": "ID",
             "code_column": "Code",
             "display_column": "Description",
@@ -234,16 +224,6 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/servicespackagetype"
-        },
-        {
-            "source_table": "TPAAgreementType_mst",
-            "source_filter": "where Deactive = 0",
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/tpaagreementtype"
         },
         {
             "source_table": "ROUTINE_STAT_MST",
@@ -467,17 +447,7 @@
         },
         {
             "source_table": "ChiefComplaintMst",
-            "source_filter": "where Description like %filter%",
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/chiefcomplaintmst"
-        },
-        {
-            "source_table": "ChiefComplaintMst",
-            "source_filter": "where Description  like '%filter%'",
+            "source_filter": null,
             "id_column": "ID",
             "code_column": "Code",
             "display_column": "Description",
@@ -544,16 +514,6 @@
             "display_arb_column": "DescriptionArb",
             "active_column": "Deactive",
             "system_uri": "http://hospital/fhir/wd_prescriptionfrequency"
-        },
-        {
-            "source_table": "CTpl_CheckBoxCategoryDetails",
-            "source_filter": "where SubModID=1145 and CategoryID=2 and isnull(Deactive,0)=0",
-            "id_column": "ID",
-            "code_column": "Code",
-            "display_column": "Description",
-            "display_arb_column": "DescriptionArb",
-            "active_column": "Deactive",
-            "system_uri": "http://hospital/fhir/ctpl_checkboxcategorydetails"
         },
         {
             "source_table": "DiscountReason_Mst",

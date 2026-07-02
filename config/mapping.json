@@ -1,0 +1,661 @@
+{
+    "business_tables": [
+        "Patient",
+        "User_Mst",
+        "Visit",
+        "VisitType_Mst",
+        "Billing_Mst",
+        "BillingDetails",
+        "OrderMst",
+        "OrderDtl",
+        "Service_Mst",
+        "Receipt_Mst",
+        "Receipt_Dtls",
+        "IVItem",
+        "Gender_Mst",
+        "PatientType_Mst",
+        "PatientSubType_Mst",
+        "Room_Mst",
+        "Bed_Mst",
+        "Floor_Mst",
+        "Block_Mst",
+        "Bed_Status_Mst",
+        "DrugSaleMst",
+        "DrugSaleDtl",
+        "WD_Prescription_Mst",
+        "WD_Prescription_Details",
+        "WD_PrescriptionDaysFrequency",
+        "Ds_PatientAppoinment",
+        "Ds_PatientAppoinmentTemperary",
+        "LABTest",
+        "LABTestParam",
+        "LABTestResult",
+        "OT_Scheduling_Mst",
+        "OT_SCHEDULLING_DTL",
+        "WD_TPRBP_DTLS",
+        "Ctpl_OpInitialAssessment",
+        "Ctpl_OPNurseAssessment_Dtl"
+    ],
+    "master_tables": [
+        {
+            "source_table": "WithinDays_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/withindays"
+        },
+        {
+            "source_table": "Ward_Mst",
+            "source_filter": "where ISNULL(Deactive,0)=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/ward"
+        },
+        {
+            "source_table": "UnitMst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/unitmst"
+        },
+        {
+            "source_table": "NPhiesScientificAbscReasons",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nphiesscientificabscreasons  "
+        },
+        {
+            "source_table": "Route_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/route"
+        },
+        {
+            "source_table": "Result_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/result"
+        },
+        {
+            "source_table": "CTpl_CheckBoxCategoryDetails",
+            "source_filter": "where SubModID=1145 and CategoryID=1 and isnull(Deactive,0)=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/ctpl_checkboxcategorydetails"
+        },
+        {
+            "source_table": "Period_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/period"
+        },
+        {
+            "source_table": "PainScore_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/painscore"
+        },
+        {
+            "source_table": "PainAssementTools",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/painassementtools"
+        },
+        {
+            "source_table": "OutputItem_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/outputitem"
+        },
+        {
+            "source_table": "OutputItem_Mst",
+            "source_filter": "where ISNULL(Deactive,0)=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/outputitem"
+        },
+        {
+            "source_table": "DDAdmissionType",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/ddadmissiontype"
+        },
+        {
+            "source_table": "NphiesOnsetConditionType",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nphiesonsetconditiontype"
+        },
+        {
+            "source_table": "Nationality_Master",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nationality"
+        },
+        {
+            "source_table": "MethodOfDelivery_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/methodofdelivery"
+        },
+        {
+            "source_table": "LastDuration_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/lastduration"
+        },
+        {
+            "source_table": "IntakeItem_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/intakeitem"
+        },
+        {
+            "source_table": "TPAAgreementType_mst",
+            "source_filter": "where Deactive=0  ORDER BY AgreementTypeId",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/tpaagreementtype"
+        },
+        {
+            "source_table": "SwapMachine_Mst",
+            "source_filter": "WHERE ISNULL(Deactive,0) = 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/swapmachine"
+        },
+        {
+            "source_table": "ServicesPackageType",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/servicespackagetype"
+        },
+        {
+            "source_table": "TPAAgreementType_mst",
+            "source_filter": "where Deactive = 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/tpaagreementtype"
+        },
+        {
+            "source_table": "ROUTINE_STAT_MST",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/routine_stat"
+        },
+        {
+            "source_table": "Religion_Mst",
+            "source_filter": "where Deactive=0  ORDER BY Religion_ID",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/religion"
+        },
+        {
+            "source_table": "Relation_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/relation"
+        },
+        {
+            "source_table": "Insurance_Mst",
+            "source_filter": "where ISnull(Deactive,0)=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/insurance"
+        },
+        {
+            "source_table": "paymentmode_mst",
+            "source_filter": "where Deactive=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/paymentmode"
+        },
+        {
+            "source_table": "patienttype_mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/patienttype"
+        },
+        {
+            "source_table": "PatientIdType_mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/patientidtype"
+        },
+        {
+            "source_table": "DDRefreralType",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/ddrefreraltype"
+        },
+        {
+            "source_table": "Occupation_Mst",
+            "source_filter": "where isnull(Deactive,0)=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/occupation"
+        },
+        {
+            "source_table": "NphiesRequestStatus_mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nphiesrequeststatus"
+        },
+        {
+            "source_table": "Payee_Mst",
+            "source_filter": "WHERE (Deactive = 0) And PayeeID <> 1",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/payee"
+        },
+        {
+            "source_table": "NPhiesInvestigationResults",
+            "source_filter": "where isnull(Deactive,0) = 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nphiesinvestigationresults"
+        },
+        {
+            "source_table": "Nationality_master",
+            "source_filter": "WHERE isnull(DeActive,0)=0 order by NationalityDesc",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nationality"
+        },
+        {
+            "source_table": "MaritalStatus_mst",
+            "source_filter": "where Deactive= 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/maritalstatus"
+        },
+        {
+            "source_table": "Living_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/living"
+        },
+        {
+            "source_table": "InsuranceApprovalType",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/insuranceapprovaltype"
+        },
+        {
+            "source_table": "WD_PrescriptionInfo",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/wd_prescriptioninfo"
+        },
+        {
+            "source_table": "Gender_Mst",
+            "source_filter": "WHERE Active = 1 ORDER BY 1 ASC",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/gender"
+        },
+        {
+            "source_table": "Gender_Mst Where Active=1",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/gender where active=1"
+        },
+        {
+            "source_table": "NPhiesAdmitSource",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nphiesadmitsource"
+        },
+        {
+            "source_table": "City_Mst Where Isnull(Deactive,0)=0",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/city where isnull(deactive,0)=0"
+        },
+        {
+            "source_table": "ChiefComplaintMst",
+            "source_filter": "where Description like %filter%",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/chiefcomplaintmst"
+        },
+        {
+            "source_table": "ChiefComplaintMst",
+            "source_filter": "where Description  like '%filter%'",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/chiefcomplaintmst"
+        },
+        {
+            "source_table": "CaseType_Mst Where IsNull(Deactive,0) = 0 and VisitTypeID=2",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/casetype where isnull(deactive,0) = 0 and visittypeid=2"
+        },
+        {
+            "source_table": "Bank_Mst",
+            "source_filter": "where Deactive = 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/bank"
+        },
+        {
+            "source_table": "TPAApprovalStatus_Mst",
+            "source_filter": "where isnull(Deactive,0) = 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/tpaapprovalstatus"
+        },
+        {
+            "source_table": "AdmissionSource",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/admissionsource"
+        },
+        {
+            "source_table": "WD_PrescriptionDaysFrequency",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/wd_prescriptiondaysfrequency"
+        },
+        {
+            "source_table": "WD_PrescriptionFrequency",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/wd_prescriptionfrequency"
+        },
+        {
+            "source_table": "CTpl_CheckBoxCategoryDetails",
+            "source_filter": "where SubModID=1145 and CategoryID=2 and isnull(Deactive,0)=0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/ctpl_checkboxcategorydetails"
+        },
+        {
+            "source_table": "DiscountReason_Mst",
+            "source_filter": "where isnull(deactive,0)= 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/discountreason"
+        },
+        {
+            "source_table": "vwDiscountAuthority",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/vwdiscountauthority"
+        },
+        {
+            "source_table": "DischargeType_Mst",
+            "source_filter": "where (Deactive = 0 or Deactive is null) ORDER BY DischargeType_ID ASC",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/dischargetype"
+        },
+        {
+            "source_table": "DischargeTo_Mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/dischargeto"
+        },
+        {
+            "source_table": "NphiesDiagnosisTypeID",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/nphiesdiagnosistypeid"
+        },
+        {
+            "source_table": "CareType_mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/caretype"
+        },
+        {
+            "source_table": "Reason_Mst Where ReasonTypeId=10 AND Deactive=0",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/reason where reasontypeid=10 and deactive=0"
+        },
+        {
+            "source_table": "Allergies_mst",
+            "source_filter": null,
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/allergies"
+        },
+        {
+            "source_table": "AllergyMedicineMst",
+            "source_filter": "WHERE Deactive =0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/allergymedicinemst"
+        },
+        {
+            "source_table": "AllergyFoodMst",
+            "source_filter": "WHERE Deactive = 0",
+            "id_column": "ID",
+            "code_column": "Code",
+            "display_column": "Description",
+            "display_arb_column": "DescriptionArb",
+            "active_column": "Deactive",
+            "system_uri": "http://hospital/fhir/allergyfoodmst"
+        }
+    ]
+}

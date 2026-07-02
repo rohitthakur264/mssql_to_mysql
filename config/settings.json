@@ -1,0 +1,20 @@
+{
+  "mssql": {
+    "driver": "ODBC Driver 17 for SQL Server",
+    "server": "192.168.2.120",
+    "database": "Prodoc_NewVersion",
+    "user": "sa",
+    "password": "password@123"
+  },
+  "mysql": {
+    "host": "localhost",
+    "database": "fhir_db",
+    "user": "rohit",
+    "password": "12345678",
+    "port": 3306
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/Migration_Log.txt"
+  }
+}

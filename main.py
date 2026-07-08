@@ -57,44 +57,7 @@ def run_migration():
     schema_records = []
     relationship_records = []
     
-    # 1. Process Business Tables
-    business_tables = mapping.get("business_tables", [])
-    logger.info(f"Processing {len(business_tables)} Business Tables...")
-    
-    for table in business_tables:
-        target_table = f"fhir_{table.lower()}"
-        try:
-            logger.info(f"--- Processing Business Table: {table} -> {target_table} ---")
-            
-            # Metadata
-            metadata = reader.get_table_metadata(table)
-            schema_records.append({"Source Table": table, "Target Table": target_table, "Type": "Business", "Columns": len(metadata['columns'])})
-            
-            for fk in metadata['foreign_keys']:
-                relationship_records.append({"Table": table, "Column": fk['column_name'], "Ref Table": fk['ref_table'], "Ref Column": fk['ref_column']})
-            
-            # Schema
-            schema_sql = schema_gen.generate_business_table_sql(target_table, metadata)
-            loader.execute_schema_sql(schema_sql)
-            
-            # Data
-            for batch in extractor.extract_data(table, batch_size=5000):
-                transformed = transformer.transform_business_batch(batch)
-                loader.load_data(target_table, transformed)
-                
-            # Validate
-            # Assume first PK is the ID for validation, or generic fallback if no PK
-            id_col = metadata['primary_keys'][0] if metadata['primary_keys'] else None
-            if id_col:
-                val_res = validator.validate_table(table, target_table, id_col)
-                validation_results.append(val_res)
-            else:
-                logger.warning(f"No primary key found for {table}, skipping some validations.")
-                
-        except Exception as e:
-            logger.error(f"Failed to process business table {table}: {e}")
-
-    # 2. Process Master Tables
+    # 1. Process Master Tables
     master_tables = mapping.get("master_tables", [])
     logger.info(f"Processing {len(master_tables)} Master Tables...")
     
@@ -124,6 +87,7 @@ def run_migration():
             loader.execute_schema_sql(schema_sql)
             
             # Data
+            loader.truncate_table(target_table)
             for batch in extractor.extract_data(source_table, filter_clause=filter_clause, batch_size=5000):
                 transformed = transformer.transform_master_batch(batch, m_table_config)
                 loader.load_data(target_table, transformed)
@@ -135,6 +99,44 @@ def run_migration():
         except Exception as e:
             logger.error(f"Failed to process master table {source_table}: {e}")
             
+    # 2. Process Business Tables
+    business_tables = mapping.get("business_tables", [])
+    logger.info(f"Processing {len(business_tables)} Business Tables...")
+    
+    for table in business_tables:
+        target_table = f"fhir_{table.lower()}"
+        try:
+            logger.info(f"--- Processing Business Table: {table} -> {target_table} ---")
+            
+            # Metadata
+            metadata = reader.get_table_metadata(table)
+            schema_records.append({"Source Table": table, "Target Table": target_table, "Type": "Business", "Columns": len(metadata['columns'])})
+            
+            for fk in metadata['foreign_keys']:
+                relationship_records.append({"Table": table, "Column": fk['column_name'], "Ref Table": fk['ref_table'], "Ref Column": fk['ref_column']})
+            
+            # Schema
+            schema_sql = schema_gen.generate_business_table_sql(target_table, metadata)
+            loader.execute_schema_sql(schema_sql)
+            
+            # Data
+            loader.truncate_table(target_table)
+            for batch in extractor.extract_data(table, batch_size=5000):
+                transformed = transformer.transform_business_batch(batch)
+                loader.load_data(target_table, transformed)
+                
+            # Validate
+            # Assume first PK is the ID for validation, or generic fallback if no PK
+            id_col = metadata['primary_keys'][0] if metadata['primary_keys'] else None
+            if id_col:
+                val_res = validator.validate_table(table, target_table, id_col)
+                validation_results.append(val_res)
+            else:
+                logger.warning(f"No primary key found for {table}, skipping some validations.")
+                
+        except Exception as e:
+            logger.error(f"Failed to process business table {table}: {e}")
+
     # 3. Generate Foreign Keys
     # Depending on order of creation, FKs should be created after all tables are loaded.
     logger.info("Applying Foreign Key constraints...")
@@ -142,13 +144,13 @@ def run_migration():
         target_table = f"fhir_{table.lower()}"
         try:
             metadata = reader.get_table_metadata(table)
-            fk_sql = schema_gen.generate_foreign_keys_sql(target_table, metadata)
-            if fk_sql:
+            fk_sqls = schema_gen.generate_foreign_keys_sql(target_table, metadata, mapping)
+            for fk_sql in fk_sqls:
                 try:
                     loader.execute_schema_sql(fk_sql)
-                    logger.info(f"Successfully generated and applied FKs for {table}.")
                 except Exception as e:
                     logger.warning(f"Could not apply some FKs for {table} (referenced table might be missing or renamed): {e}")
+            logger.info(f"Successfully generated and applied FKs for {table}.")
         except Exception as e:
             logger.error(f"Failed to generate FKs for {table}: {e}")
 
@@ -159,13 +161,13 @@ def run_migration():
         target_table = m_table_config.get('target_table', f"fhir_{source_table.lower()}")
         try:
             metadata = reader.get_table_metadata(source_table)
-            fk_sql = schema_gen.generate_foreign_keys_sql(target_table, metadata)
-            if fk_sql:
+            fk_sqls = schema_gen.generate_foreign_keys_sql(target_table, metadata, mapping)
+            for fk_sql in fk_sqls:
                 try:
                     loader.execute_schema_sql(fk_sql)
-                    logger.info(f"Successfully generated and applied FKs for {source_table}.")
                 except Exception as e:
                     logger.warning(f"Could not apply some FKs for {source_table} (referenced table might be missing or renamed): {e}")
+            logger.info(f"Successfully generated and applied FKs for {source_table}.")
         except Exception as e:
             logger.error(f"Failed to generate FKs for {source_table}: {e}")
 

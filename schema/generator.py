@@ -66,7 +66,14 @@ class SchemaGenerator:
                 col['scale']
             )
             nullable = "NULL" if col['is_nullable'] else "NOT NULL"
-            col_defs.append(f"    `{col['column_name'].lower()}` {mysql_type} {nullable}")
+            col_name = col['column_name'].lower()
+            # Handle specific translations as requested
+            if col_name.endswith('city'):
+                col_name = col_name.replace('city', 'city_id')
+            elif col_name.endswith('state'):
+                col_name = col_name.replace('state', 'state_id')
+                
+            col_defs.append(f"    `{col_name}` {mysql_type} {nullable}")
         
         if pks:
             pk_str = ", ".join([f"`{pk}`" for pk in pks])
@@ -82,20 +89,24 @@ class SchemaGenerator:
         """
         columns = metadata['columns']
         def find_col_name(cols: List[str], expected: str, hints: List[str]) -> str:
+            if expected is None:
+                return None
             expected = expected.lower()
             for c in cols:
                 if c.lower() == expected: return c
             for c in cols:
                 for hint in hints:
                     if hint in c.lower(): return c
+            if 'id' in hints and len(cols) > 0:
+                return cols[0]
             return None
 
         col_names = [c['column_name'] for c in columns]
-        id_col = find_col_name(col_names, mapping_config.get('id_column', 'ID'), ['id'])
-        code_col = find_col_name(col_names, mapping_config.get('code_column', 'Code'), ['code'])
-        display_col = find_col_name(col_names, mapping_config.get('display_column', 'Description'), ['desc', 'description', 'name'])
-        display_arb_col = find_col_name(col_names, mapping_config.get('display_arb_column', 'DescriptionArb'), ['arb', 'arabic'])
-        active_col = find_col_name(col_names, mapping_config.get('active_column', 'Deactive'), ['active', 'isactive', 'status'])
+        id_col          = find_col_name(col_names, mapping_config.get('id_column', 'ID'), ['id'])
+        code_col        = find_col_name(col_names, mapping_config.get('code_column', 'Code'), ['code'])
+        display_col     = find_col_name(col_names, mapping_config.get('display_column', 'Description'), ['desc', 'description', 'name'])
+        display_arb_col = find_col_name(col_names, mapping_config.get('display_arb_column'), ['arb', 'arabic'])
+        active_col      = find_col_name(col_names, mapping_config.get('active_column'), ['active', 'isactive', 'status'])
 
         mapped_original_cols = [c for c in [id_col, code_col, display_col, display_arb_col, active_col] if c is not None]
 
@@ -129,8 +140,14 @@ class SchemaGenerator:
         for col in columns:
             col_name = col['column_name'].lower()
             if col_name in mapped_original_cols_lower:
-                continue # Renamed to FHIR column
+                continue # Skip this, as it is renamed to a FHIR column
             
+            # Apply translations to unmapped columns
+            if col_name.endswith('city'):
+                col_name = col_name.replace('city', 'city_id')
+            elif col_name.endswith('state'):
+                col_name = col_name.replace('state', 'state_id')
+
             final_col_name = col_name
             if final_col_name in fhir_cols:
                 final_col_name = "src_" + final_col_name # Rename original column to avoid clash and keep data
@@ -139,32 +156,188 @@ class SchemaGenerator:
             nullable = "NULL" if col['is_nullable'] else "NOT NULL"
             col_defs.append(f"    `{final_col_name}` {mysql_type} {nullable}")
             
-        # Removed PRIMARY KEY (`id`) to allow extracting duplicate records from union views like AdmissionSource
+        # Use PRIMARY KEY (`id`) to preserve primary keys in exported schemas/backups
+        col_defs.append("    PRIMARY KEY (`id`)")
 
         sql += ",\n".join(col_defs)
         sql += "\n);\n"
         return sql
 
-    def generate_foreign_keys_sql(self, target_table_name: str, metadata: Dict[str, Any]) -> str:
+    def generate_foreign_keys_sql(self, target_table_name: str, metadata: Dict[str, Any], mapping_config: Dict[str, Any] = None) -> str:
         """
         Generates ALTER TABLE statements for foreign keys.
         """
-        fks = metadata['foreign_keys']
+        fks = metadata.get('foreign_keys', [])
         
-        if not fks:
-            return ""
-            
-        sql = f"ALTER TABLE `{target_table_name}`\n"
+        # Build a set of actual column names in this table (lowercased) for validation
+        actual_cols = set(col['column_name'].lower() for col in metadata.get('columns', []))
+        # Also include city->city_id / state->state_id translations
+        actual_cols_translated = set()
+        for c in actual_cols:
+            if c.endswith('city'):
+                actual_cols_translated.add(c.replace('city', 'city_id'))
+            elif c.endswith('state'):
+                actual_cols_translated.add(c.replace('state', 'state_id'))
+            else:
+                actual_cols_translated.add(c)
+        
         fk_defs = []
+        seen_fk_names = set()  # Track FK names to prevent duplicates (Error 1826)
+
         for fk in fks:
-            # We assume referenced tables are also migrated. 
-            # If a business table references a master table that was renamed to fhir_*, 
-            # this logic might need adjustment during execution to point to the new name.
-            # For now, we generate standard FKs.
-            ref_target_table = f"fhir_{fk['ref_table'].lower()}"
-            fk_name = f"fk_{target_table_name}_{fk['column_name'].lower()}"
-            fk_defs.append(f"  ADD CONSTRAINT `{fk_name}` FOREIGN KEY (`{fk['column_name'].lower()}`) REFERENCES `{ref_target_table}` (`{fk['ref_column'].lower()}`)")
+            # Clean up referenced table name (in case it matches a master table with a WHERE clause)
+            ref_table_raw = fk['ref_table']
             
-        sql += ",\n".join(fk_defs)
-        sql += ";\n"
-        return sql
+            # Remap ward_mst1 -> ward_mst (ward_mst1 is legacy; fhir_ward_mst is canonical)
+            if ref_table_raw.lower() == 'ward_mst1':
+                ref_table_raw = 'Ward_mst'
+
+            # Default mapping
+            ref_target_table = f"fhir_{ref_table_raw.lower()}"
+            ref_target_column = fk['ref_column'].lower()
+            
+            # Check if referenced table is a master table
+            is_master = False
+            if mapping_config and 'master_tables' in mapping_config:
+                import re
+                for m_table in mapping_config['master_tables']:
+                    m_source_raw = m_table['source_table']
+                    m_source_clean = re.split(r'\s+where\s+', m_source_raw, flags=re.IGNORECASE)[0].strip()
+                    
+                    if ref_table_raw.lower() == m_source_clean.lower():
+                        is_master = True
+                        ref_target_table = m_table.get('target_table', f"fhir_{m_source_clean.lower()}")
+                        
+                        # Master tables always have their primary reference mapped to 'id'
+                        ref_target_column = 'id'
+                        break
+            
+            # Also check if referenced table is a business table (to get exact target table name if customized later)
+            is_business = False
+            if not is_master and mapping_config and 'business_tables' in mapping_config:
+                for b_table in mapping_config['business_tables']:
+                    if ref_table_raw.lower() == b_table.lower():
+                        is_business = True
+                        ref_target_table = f"fhir_{b_table.lower()}"
+                        break
+            
+            # Skip generating the FK if the referenced table is not mapped to be migrated
+            if not is_master and not is_business:
+                continue
+            
+            fk_col_name = fk['column_name'].lower()
+            if fk_col_name.endswith('city'):
+                fk_col_name = fk_col_name.replace('city', 'city_id')
+            elif fk_col_name.endswith('state'):
+                fk_col_name = fk_col_name.replace('state', 'state_id')
+            
+            # Skip if the column doesn't actually exist in the table
+            if fk_col_name not in actual_cols_translated:
+                continue
+
+
+            fk_name = f"fk_{target_table_name}_{fk_col_name}"
+            
+            # EXCLUSION LIST: Explicitly skip specific problematic foreign keys due to 
+            # legacy SSMS data mismatches (as requested by user)
+            excluded_fks = {
+                'fk_fhir_visit_roomid',
+                'fk_fhir_visit_wardid',
+                'fk_auto_fhir_payee_mst_billingcity_id',
+                'fk_auto_fhir_payee_mst_billingstate_id',
+                'fk_auto_fhir_payee_mst_regofficecity_id',
+                'fk_auto_fhir_payee_mst_regofficestate_id',
+                'fk_auto_fhir_visit_payee_city_id',
+                'fk_auto_fhir_visit_payee_state_id',
+                'fk_auto_fhir_visit_rel_city_id',
+                'fk_auto_fhir_visit_rel_state_id',
+                'fk_fhir_visit_patientid'
+            }
+            if fk_name in excluded_fks:
+                continue
+            
+            # Skip if we've already seen this FK name (Error 1826 de-duplication)
+            if fk_name in seen_fk_names:
+                continue
+            seen_fk_names.add(fk_name)
+
+            
+            fk_defs.append(f"  ADD CONSTRAINT `{fk_name}` FOREIGN KEY (`{fk_col_name}`) REFERENCES `{ref_target_table}` (`{ref_target_column}`)")
+
+        # Numeric types that are compatible with 'id' (INT) in city/state master tables
+        NUMERIC_TYPES = {'int', 'tinyint', 'smallint', 'bigint', 'integer'}
+
+        # Auto-guess missing foreign keys for city and state based on actual columns
+        for col in metadata.get('columns', []):
+            col_name = col['column_name'].lower()
+            col_type = col.get('data_type', '').lower()
+
+            if col_name.endswith('city_id') or col_name.endswith('city'):
+                fk_col_name = col_name if col_name.endswith('city_id') else col_name.replace('city', 'city_id')
+                # Only add if the translated column exists in the table
+                if fk_col_name not in actual_cols_translated:
+                    continue
+                # Skip if this table IS city_mst (prevents self-referencing FK)
+                if target_table_name == 'fhir_city_mst':
+                    continue
+                # Skip if column type is not numeric (e.g. VARCHAR) — incompatible with INT id (Error 3780)
+                if col_type not in NUMERIC_TYPES:
+                    continue
+                fk_name = f"fk_auto_{target_table_name}_{fk_col_name}"
+                
+                # EXCLUSION LIST: Skip legacy mismatched data
+                if fk_name in {
+                    'fk_auto_fhir_bank_mst_city_id', 
+                    'fk_auto_fhir_bank_mst_state_id',
+                    'fk_auto_fhir_payee_mst_billingcity_id',
+                    'fk_auto_fhir_payee_mst_billingstate_id',
+                    'fk_auto_fhir_payee_mst_regofficecity_id',
+                    'fk_auto_fhir_payee_mst_regofficestate_id',
+                    'fk_auto_fhir_visit_payee_city_id',
+                    'fk_auto_fhir_visit_payee_state_id',
+                    'fk_auto_fhir_visit_rel_city_id',
+                    'fk_auto_fhir_visit_rel_state_id'
+                }:
+                    continue
+                
+                # Prevent duplicate constraints (check both name and column reference)
+                if fk_name not in seen_fk_names and not any(f"`{fk_col_name}`" in d for d in fk_defs):
+                    seen_fk_names.add(fk_name)
+                    fk_defs.append(f"  ADD CONSTRAINT `{fk_name}` FOREIGN KEY (`{fk_col_name}`) REFERENCES `fhir_city_mst` (`id`)")
+            elif col_name.endswith('state_id') or col_name.endswith('state'):
+                fk_col_name = col_name if col_name.endswith('state_id') else col_name.replace('state', 'state_id')
+                # Only add if the translated column exists in the table
+                if fk_col_name not in actual_cols_translated:
+                    continue
+                # Skip if this table IS state_mst (prevents self-referencing FK)
+                if target_table_name == 'fhir_state_mst':
+                    continue
+                # Skip if column type is not numeric (e.g. VARCHAR) — incompatible with INT id (Error 3780)
+                if col_type not in NUMERIC_TYPES:
+                    continue
+                fk_name = f"fk_auto_{target_table_name}_{fk_col_name}"
+                
+                # EXCLUSION LIST: Skip legacy mismatched data
+                if fk_name in {
+                    'fk_auto_fhir_bank_mst_city_id', 
+                    'fk_auto_fhir_bank_mst_state_id',
+                    'fk_auto_fhir_payee_mst_billingcity_id',
+                    'fk_auto_fhir_payee_mst_billingstate_id',
+                    'fk_auto_fhir_payee_mst_regofficecity_id',
+                    'fk_auto_fhir_payee_mst_regofficestate_id',
+                    'fk_auto_fhir_visit_payee_city_id',
+                    'fk_auto_fhir_visit_payee_state_id',
+                    'fk_auto_fhir_visit_rel_city_id',
+                    'fk_auto_fhir_visit_rel_state_id'
+                }:
+                    continue
+                    
+                if fk_name not in seen_fk_names and not any(f"`{fk_col_name}`" in d for d in fk_defs):
+                    seen_fk_names.add(fk_name)
+                    fk_defs.append(f"  ADD CONSTRAINT `{fk_name}` FOREIGN KEY (`{fk_col_name}`) REFERENCES `fhir_state_mst` (`id`)")
+
+        sqls = []
+        for defn in fk_defs:
+            sqls.append(f"ALTER TABLE `{target_table_name}`\n{defn};")
+        return sqls
+

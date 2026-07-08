@@ -28,7 +28,7 @@ class MSSQLMetadataReader:
             c.is_nullable,
             c.is_identity
         FROM sys.columns c
-        INNER JOIN sys.tables tbl ON c.object_id = tbl.object_id
+        INNER JOIN sys.objects tbl ON c.object_id = tbl.object_id
         INNER JOIN sys.types t ON c.user_type_id = t.user_type_id
         WHERE tbl.name = ?
         AND (COLUMNPROPERTY(tbl.object_id, c.name, 'IsHidden') = 0 OR COLUMNPROPERTY(tbl.object_id, c.name, 'IsHidden') IS NULL)

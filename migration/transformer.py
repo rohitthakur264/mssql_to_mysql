@@ -6,7 +6,10 @@ logger = logging.getLogger(__name__)
 def find_col(row_lower: Dict[str, Any], expected: str, hints: List[str]) -> str:
     """
     Attempts to find the correct column in row_lower based on expected name and hints.
+    Returns None if expected is None.
     """
+    if expected is None:
+        return None
     expected = expected.lower()
     if expected in row_lower:
         return expected
@@ -31,7 +34,14 @@ class DataTransformer:
         # For business tables, standard pass-through but with lowercase keys
         transformed = []
         for row in batch:
-            transformed_row = {k.lower(): v for k, v in row.items()}
+            transformed_row = {}
+            for k, v in row.items():
+                k_lower = k.lower()
+                if k_lower.endswith('city'):
+                    k_lower = k_lower.replace('city', 'city_id')
+                elif k_lower.endswith('state'):
+                    k_lower = k_lower.replace('state', 'state_id')
+                transformed_row[k_lower] = v
             transformed.append(transformed_row)
         return transformed
 
@@ -42,25 +52,23 @@ class DataTransformer:
         transformed_batch = []
         for row in batch:
             try:
-                # Handle cases where column names might be case-insensitive in the DB but case-sensitive in the dict
-                # We do a case-insensitive lookup for safety
                 row_lower = {k.lower(): v for k, v in row.items()}
-                
-                id_col = find_col(row_lower, mapping_config.get('id_column', 'ID'), ['id'])
-                code_col = find_col(row_lower, mapping_config.get('code_column', 'Code'), ['code'])
-                display_col = find_col(row_lower, mapping_config.get('display_column', 'Description'), ['desc', 'description', 'name'])
-                display_arb_col = find_col(row_lower, mapping_config.get('display_arb_column', 'DescriptionArb'), ['arb', 'arabic'])
-                active_col = find_col(row_lower, mapping_config.get('active_column', 'Deactive'), ['active', 'isactive', 'status'])
-                
-                is_active_val = row_lower.get(active_col)
-                # Convert active value to TINYINT(1) equivalent (1 or 0)
-                # Assuming Deactive = 0 means Active = 1. The specific logic depends on business rules.
-                # If the column is literally 'Deactive', we should invert it if we want 'isactive'
-                if active_col.lower() == 'deactive':
-                    final_active = 1 if (is_active_val == 0 or is_active_val is False) else 0
+
+                id_col          = find_col(row_lower, mapping_config.get('id_column', 'ID'), ['id'])
+                code_col        = find_col(row_lower, mapping_config.get('code_column', 'Code'), ['code'])
+                display_col     = find_col(row_lower, mapping_config.get('display_column', 'Description'), ['desc', 'description', 'name'])
+                display_arb_col = find_col(row_lower, mapping_config.get('display_arb_column'), ['arb', 'arabic'])
+                active_col      = find_col(row_lower, mapping_config.get('active_column'), ['active', 'isactive', 'status'])
+
+                # Determine isactive value — handle missing/None active_col
+                if active_col is None:
+                    final_active = 1  # default to active if no active column
                 else:
-                    # Generic active flag mapping
-                    final_active = 1 if is_active_val in (1, True, 'Y', 'Yes') else 0
+                    is_active_val = row_lower.get(active_col)
+                    if active_col.lower() == 'deactive':
+                        final_active = 1 if (is_active_val == 0 or is_active_val is False or is_active_val is None) else 0
+                    else:
+                        final_active = 1 if is_active_val in (1, True, 'Y', 'Yes') else 0
 
                 mapped_cols_lower = [c for c in [id_col, code_col, display_col, display_arb_col, active_col] if c is not None]
 
@@ -70,6 +78,11 @@ class DataTransformer:
                 # Copy all unmapped original columns. If they clash, prefix them with src_
                 for k, v in row.items():
                     k_lower = k.lower()
+                    if k_lower.endswith('city'):
+                        k_lower = k_lower.replace('city', 'city_id')
+                    elif k_lower.endswith('state'):
+                        k_lower = k_lower.replace('state', 'state_id')
+                        
                     if k_lower in mapped_cols_lower:
                         continue # Skip this, as it is renamed to a FHIR column
                     if k_lower in fhir_cols:
